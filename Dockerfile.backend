@@ -1,0 +1,35 @@
+# Backend Dockerfile
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy package files
+COPY server/package*.json ./
+
+# Install dependencies
+RUN npm ci --only=production
+
+# Copy source code
+COPY server/ ./
+COPY data/ ./data/
+COPY routes/ ./routes/
+COPY middleware/ ./middleware/
+COPY utils/ ./utils/
+
+# Copy main server file
+COPY index.js ./
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nodeuser -u 1001
+USER nodeuser
+
+# Expose port
+EXPOSE 10000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:10000/health || exit 1
+
+# Start the application
+CMD ["npm", "start"]

@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: lesselectrical-shop-backend
+    env: node
+    rootDir: ./server
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRE
+        value: 7d
+      - key: CLIENT_URL
+        value: https://lesselectrical-shop-frontend.onrender.com
+
+  - type: web
+    name: lesselectrical-shop-frontend
+    env: static
+    buildCommand: npm install; npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://lesselectrical-shop-backend.onrender.com/api
+      - key: VITE_APP_NAME
+        value: LessElectrical Shop
+      - key: VITE_APP_VERSION
+        value: 1.0.0
